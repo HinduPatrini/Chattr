@@ -1,4 +1,4 @@
- import http from "http";
+import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 import app from "./src/app.js";
@@ -10,14 +10,17 @@ dotenv.config();
 
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  "https://chattr-sandy.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
+
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (process.env.NODE_ENV === "development" && /^http:\/\/localhost:\d+$/.test(origin)) {
-        return callback(null, true);
-      }
-      if (origin === process.env.CLIENT_URL) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(new Error(`Socket CORS: origin ${origin} not allowed`));
     },
     methods: ["GET", "POST"],
@@ -37,4 +40,3 @@ connectDB().then(async () => {
 });
 
 export default app;
-

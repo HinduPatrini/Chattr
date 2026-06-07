@@ -1,4 +1,4 @@
- import express from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
@@ -11,25 +11,25 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  "https://chattr-sandy.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-
-    // In development: allow any localhost port
-    if (process.env.NODE_ENV === "development" && /^http:\/\/localhost:\d+$/.test(origin)) {
-      return callback(null, true);
-    }
-
-    // In production: only allow the configured CLIENT_URL
-    if (origin === process.env.CLIENT_URL) {
-      return callback(null, true);
-    }
-
+    if (allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error(`CORS policy: origin ${origin} not allowed`));
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+// Handle preflight requests
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
