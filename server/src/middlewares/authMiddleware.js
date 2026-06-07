@@ -9,7 +9,8 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ message: "Not authorized, no token" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET || "chattr_fallback_jwt_secret_key_9988776655";
+    const decoded = jwt.verify(token, secret);
     req.user = await User.findById(decoded.id).select("-password");
 
     if (!req.user) {
