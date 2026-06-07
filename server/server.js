@@ -36,3 +36,5 @@ connectDB().then(async () => {
   });
 });
 
+export default app;
+
