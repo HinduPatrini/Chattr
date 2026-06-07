@@ -1,0 +1,18 @@
+{
+  "short_name": "Chattr",
+  "name": "Chattr — Connect. Chat. Vibe.",
+  "description": "Realtime messaging application built with React, Node.js, and WebSockets.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/chat",
+  "background_color": "#10101A",
+  "theme_color": "#10101A",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -6,6 +6,7 @@ export const useAuthStore = create((set, get) => ({
   user: null,
   token: localStorage.getItem("chattr_token") || null,
   isLoading: false,
+  isInitializing: true, // true until the initial session/profile check completes
 
   login: async (email, password) => {
     set({ isLoading: true });
@@ -84,13 +85,15 @@ export const useAuthStore = create((set, get) => ({
 
   fetchProfile: async () => {
     // Only fetch if token is present
-    if (!get().token) return null;
-    
-    set({ isLoading: true });
+    if (!get().token) {
+      set({ isInitializing: false });
+      return null;
+    }
+
     try {
       const response = await axiosInstance.get("/users/profile");
       const user = response.data;
-      set({ user, isLoading: false });
+      set({ user, isInitializing: false });
       return user;
     } catch (error) {
       console.error("Fetch profile failed:", error);
@@ -99,7 +102,7 @@ export const useAuthStore = create((set, get) => ({
         localStorage.removeItem("chattr_token");
         set({ token: null, user: null });
       }
-      set({ isLoading: false });
+      set({ isInitializing: false });
       return null;
     }
   },

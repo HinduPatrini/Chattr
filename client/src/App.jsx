@@ -5,46 +5,56 @@ import { useAuthStore } from "./store/useAuthStore";
 import { useChatStore } from "./store/useChatStore";
 import AuthPage from "./pages/AuthPage";
 import ChatPage from "./pages/ChatPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import LoadingScreen from "./components/common/LoadingScreen";
 
 const App = () => {
-  const token = useAuthStore((state) => state.token);
+  const { token, isInitializing, fetchProfile } = useAuthStore();
   const unreadCounts = useChatStore((state) => state.unreadCounts);
-  
+
   const totalUnread = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0);
 
+  // Run exactly once on mount: verify the stored token is still valid
+  useEffect(() => {
+    fetchProfile();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Update browser tab title with unread count
   useEffect(() => {
     document.title = totalUnread > 0 ? `Chattr (${totalUnread})` : "Chattr";
   }, [totalUnread]);
 
+  // Block rendering until the session check is complete
+  if (isInitializing) {
+    return <LoadingScreen />;
+  }
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* Root Redirect */}
+        {/* Root redirect */}
         <Route
           path="/"
           element={token ? <Navigate to="/chat" replace /> : <Navigate to="/auth" replace />}
         />
 
-        {/* Auth Route - Redirects to chat if logged in */}
+        {/* Auth — redirect to chat if already logged in */}
         <Route
           path="/auth"
           element={token ? <Navigate to="/chat" replace /> : <AuthPage />}
         />
 
-        {/* Chat Route - Protected, redirects to auth if no token */}
+        {/* Chat — protected */}
         <Route
           path="/chat"
           element={token ? <ChatPage /> : <Navigate to="/auth" replace />}
         />
 
-        {/* Catch-all Redirect */}
-        <Route
-          path="*"
-          element={<Navigate to="/" replace />}
-        />
+        {/* 404 — any unknown path */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
-      {/* Dark Theme React Hot Toaster */}
+      {/* Dark-theme toast overlay */}
       <Toaster
         position="bottom-right"
         toastOptions={{
