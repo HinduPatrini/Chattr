@@ -1,7 +1,10 @@
 import axios from "axios";
 
-// Base server origin — /api prefix is added in the baseURL below
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+// Base server origin — dynamically fallback to current domain if deployed, or localhost in development
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || 
+  (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"
+    ? window.location.origin
+    : "http://localhost:5000");
 
 const axiosInstance = axios.create({
   baseURL: `${SERVER_URL}/api`,
