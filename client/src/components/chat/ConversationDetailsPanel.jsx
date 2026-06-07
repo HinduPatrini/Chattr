@@ -10,6 +10,7 @@ import {
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
 import Avatar from "../common/Avatar";
+import { formatLastSeen } from "../../utils/dateHelper";
 
 const ConversationDetailsPanel = ({ messages }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -85,12 +86,13 @@ const ConversationDetailsPanel = ({ messages }) => {
                         : "text-text-secondary bg-background-tertiary"
                     }`}
                   >
-                    {isOnline ? "Online" : "Offline"}
+                    {isOnline ? "Online" : formatLastSeen(otherUser?.lastSeen)}
                   </span>
                 </div>
               </>
             )}
           </div>
+
 
           {/* ── Metadata ── */}
           <div className="p-4 space-y-4">

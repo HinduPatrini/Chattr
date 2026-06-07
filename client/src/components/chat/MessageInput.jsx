@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Paperclip, SendHorizontal, X } from "lucide-react";
+import { Paperclip, SendHorizontal, X, Smile } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
 import { useSocketStore } from "../../store/useSocketStore";
 import Loader from "../common/Loader";
 import toast from "react-hot-toast";
+import EmojiPicker from "emoji-picker-react";
 
 const MessageInput = () => {
   const currentUser = useAuthStore((state) => state.user);
@@ -15,11 +16,13 @@ const MessageInput = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
   const isTypingRef = useRef(false);
   const typingTimeoutRef = useRef(null);
+  const pickerRef = useRef(null);
 
   // Auto-grow textarea height up to max-h-32
   useEffect(() => {
@@ -35,6 +38,17 @@ const MessageInput = () => {
       stopTyping();
     };
   }, [activeConversation?._id]);
+
+  // Click outside emoji picker to close it
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   const stopTyping = () => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -71,6 +85,25 @@ const MessageInput = () => {
     }, 2000);
   };
 
+  const handleEmojiClick = (emojiData) => {
+    const emoji = emojiData.emoji;
+    if (textareaRef.current) {
+      const start = textareaRef.current.selectionStart;
+      const end = textareaRef.current.selectionEnd;
+      const val = textareaRef.current.value;
+      const newVal = val.substring(0, start) + emoji + val.substring(end);
+      setText(newVal);
+      
+      // Focus and reset cursor position after browser updates the value
+      setTimeout(() => {
+        textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + emoji.length;
+        textareaRef.current.focus();
+      }, 0);
+    } else {
+      setText((prev) => prev + emoji);
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -102,6 +135,7 @@ const MessageInput = () => {
 
     setIsSending(true);
     stopTyping();
+    setShowEmojiPicker(false);
 
     try {
       const formData = new FormData();
@@ -161,7 +195,7 @@ const MessageInput = () => {
       )}
 
       {/* Main Input Row */}
-      <form onSubmit={handleSubmit} className="flex items-end gap-3">
+      <form onSubmit={handleSubmit} className="flex items-end gap-3 relative">
         {/* Hidden Attachment input */}
         <input
           type="file"
@@ -181,6 +215,34 @@ const MessageInput = () => {
         >
           <Paperclip className="w-5 h-5" />
         </button>
+
+        {/* Emoji Button & Picker container */}
+        <div ref={pickerRef} className="relative flex">
+          <button
+            type="button"
+            disabled={isSending}
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className={`p-3.5 rounded-xl bg-background-tertiary border border-border transition-all focus:outline-none disabled:opacity-50 active:scale-95 ${
+              showEmojiPicker ? "text-accent border-accent/40 bg-background-hover" : "text-text-secondary hover:text-accent hover:border-accent/40"
+            }`}
+          >
+            <Smile className="w-5 h-5" />
+          </button>
+
+          {showEmojiPicker && (
+            <div className="absolute bottom-16 left-0 z-50 animate-fade-in shadow-2xl">
+              <EmojiPicker
+                theme="dark"
+                onEmojiClick={handleEmojiClick}
+                lazyLoadEmojis={true}
+                skinTonesDisabled
+                searchPlaceHolder="Search emojis..."
+                height={350}
+                width={320}
+              />
+            </div>
+          )}
+        </div>
 
         {/* Text Box */}
         <textarea

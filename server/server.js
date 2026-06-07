@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
 import socketHandler from "./src/socket/socketHandler.js";
+import { seedDemoUser } from "./src/utils/seeder.js";
 
 dotenv.config();
 
@@ -28,8 +29,10 @@ socketHandler(io);
 
 const PORT = process.env.PORT || 5000;
 
-connectDB().then(() => {
+connectDB().then(async () => {
+  await seedDemoUser();
   server.listen(PORT, () => {
     console.log(`Chattr server running on port ${PORT}`);
   });
 });
+

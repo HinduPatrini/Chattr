@@ -3,6 +3,7 @@ import { ArrowLeft, Phone, Video, MoreVertical } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
 import Avatar from "../common/Avatar";
+import { formatLastSeen } from "../../utils/dateHelper";
 
 const ChatHeader = () => {
   const currentUser = useAuthStore((state) => state.user);
@@ -24,8 +25,9 @@ const ChatHeader = () => {
     displayName = otherUser ? otherUser.username : "Unknown User";
     displayAvatar = otherUser ? otherUser.avatar : "";
     isOnline = otherUser ? onlineUsers.includes(otherUser._id) : false;
-    statusText = isOnline ? "Online" : "Last seen recently";
+    statusText = isOnline ? "Online" : formatLastSeen(otherUser?.lastSeen);
   }
+
 
   return (
     <div className="h-16 flex items-center justify-between px-4 bg-background-secondary border-b border-border select-none z-10 flex-shrink-0">

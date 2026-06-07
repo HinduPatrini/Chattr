@@ -2,29 +2,7 @@ import React from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
 import Avatar from "../common/Avatar";
-
-const formatTime = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  const now = new Date();
-  
-  // Date boundaries
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfYesterday = new Date(startOfToday);
-  startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-  const startOfWeek = new Date(startOfToday);
-  startOfWeek.setDate(startOfWeek.getDate() - 6);
-  
-  if (date >= startOfToday) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  } else if (date >= startOfYesterday) {
-    return "Yesterday";
-  } else if (date >= startOfWeek) {
-    return date.toLocaleDateString([], { weekday: 'short' });
-  } else {
-    return `${date.getMonth() + 1}/${date.getDate()}`;
-  }
-};
+import { formatMessageTime } from "../../utils/dateHelper";
 
 const ConversationItem = ({ conversation }) => {
   const currentUser = useAuthStore((state) => state.user);
@@ -100,7 +78,7 @@ const ConversationItem = ({ conversation }) => {
             {displayName}
           </h4>
           <span className="text-xs text-text-muted flex-shrink-0">
-            {formatTime(lastMessageTime)}
+            {formatMessageTime(lastMessageTime)}
           </span>
         </div>
 

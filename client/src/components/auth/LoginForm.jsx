@@ -29,6 +29,25 @@ const LoginForm = () => {
     }
   };
 
+  const handleDemoLogin = async (e) => {
+    e.preventDefault();
+    const demoEmail = "demo@chattr.com";
+    const demoPassword = "demo1234";
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+
+    try {
+      const user = await login(demoEmail, demoPassword);
+      if (user && user._id) {
+        connectSocket(user._id);
+        navigate("/chat");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Email Input */}
@@ -86,21 +105,34 @@ const LoginForm = () => {
         </div>
       </div>
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isLoading || !email.trim() || !password.trim()}
-        className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl py-3.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50"
-      >
-        {isLoading ? (
-          <>
-            <Loader />
-            <span>Signing in...</span>
-          </>
-        ) : (
-          <span>Sign In</span>
-        )}
-      </button>
+      {/* Buttons Container */}
+      <div className="space-y-3.5 pt-2">
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading || !email.trim() || !password.trim()}
+          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-xl py-3.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50"
+        >
+          {isLoading ? (
+            <>
+              <Loader />
+              <span>Signing in...</span>
+            </>
+          ) : (
+            <span>Sign In</span>
+          )}
+        </button>
+
+        {/* Try Demo Button */}
+        <button
+          type="button"
+          onClick={handleDemoLogin}
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 bg-background-tertiary border border-border hover:bg-background-hover hover:border-accent/40 disabled:opacity-50 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary font-medium rounded-xl py-3.5 transition-all duration-200 focus:outline-none"
+        >
+          <span>Try Demo Account</span>
+        </button>
+      </div>
     </form>
   );
 };

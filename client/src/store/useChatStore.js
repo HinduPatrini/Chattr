@@ -158,8 +158,32 @@ export const useChatStore = create((set, get) => ({
   },
 
   setOnlineUsers: (userIds) => {
+    const prevOnline = get().onlineUsers || [];
     set({ onlineUsers: userIds });
+    
+    // Find users who just went offline
+    const wentOffline = prevOnline.filter(id => !userIds.includes(id));
+    if (wentOffline.length > 0) {
+      set((state) => {
+        if (!state.activeConversation) return {};
+        
+        const updatedParticipants = state.activeConversation.participants?.map((p) => {
+          if (wentOffline.includes(p._id)) {
+            return { ...p, lastSeen: new Date().toISOString() };
+          }
+          return p;
+        });
+        
+        return {
+          activeConversation: {
+            ...state.activeConversation,
+            participants: updatedParticipants,
+          }
+        };
+      });
+    }
   },
+
 
   createConversation: async (receiverId) => {
     try {
