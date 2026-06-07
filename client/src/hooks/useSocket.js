@@ -8,10 +8,10 @@ export const useSocket = () => {
   const [typingUser, setTypingUser] = useState(null);
   const prevActiveIdRef = useRef(null);
 
+  // Join/leave conversation rooms when active conversation changes
   useEffect(() => {
     if (!socket) return;
 
-    // Join/leave rooms on active conversation change
     const prevId = prevActiveIdRef.current;
     const currentId = activeConversation?._id;
 
@@ -27,20 +27,19 @@ export const useSocket = () => {
     }
   }, [activeConversation, socket]);
 
+  // Socket event listeners
   useEffect(() => {
     if (!socket) return;
 
     const handleTypingStart = ({ userId, username }) => {
-      // Only set if we are in the active conversation
       setTypingUser({ userId, username });
     };
 
     const handleTypingStop = ({ userId }) => {
-      setTypingUser((prev) => (prev && prev.userId === userId ? null : prev));
+      setTypingUser((prev) => (prev?.userId === userId ? null : prev));
     };
 
     const handleMessageRead = ({ conversationId, userId }) => {
-      // Update read receipts in the messages in useChatStore
       useChatStore.setState((state) => {
         const updatedMessages = state.messages.map((msg) => {
           if (msg.conversationId === conversationId) {
@@ -52,7 +51,6 @@ export const useSocket = () => {
           return msg;
         });
 
-        // Also update conversations lastMessage read receipts if it matches
         const updatedConversations = state.conversations.map((conv) => {
           if (conv._id === conversationId && conv.lastMessage) {
             const readBy = conv.lastMessage.readBy || [];
@@ -69,7 +67,10 @@ export const useSocket = () => {
           return conv;
         });
 
-        return { messages: updatedMessages, conversations: updatedConversations };
+        return {
+          messages: updatedMessages,
+          conversations: updatedConversations,
+        };
       });
     };
 
@@ -84,7 +85,7 @@ export const useSocket = () => {
     };
   }, [socket, activeConversation]);
 
-  // When active conversation changes, reset typing indicator
+  // Reset typing indicator when conversation changes
   useEffect(() => {
     setTypingUser(null);
   }, [activeConversation]);
