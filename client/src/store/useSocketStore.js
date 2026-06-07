@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { io } from "socket.io-client";
 import { useChatStore } from "./useChatStore";
+import { SERVER_URL } from "../api/axios";
 
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = SERVER_URL;
 
 export const useSocketStore = create((set, get) => ({
   socket: null,
