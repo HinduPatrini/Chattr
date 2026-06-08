@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, Phone, Video, MoreVertical } from "lucide-react";
+import { ArrowLeft, Phone, Video, MoreVertical, Info } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
 import Avatar from "../common/Avatar";
@@ -7,7 +7,7 @@ import { formatLastSeen } from "../../utils/dateHelper";
 
 const ChatHeader = () => {
   const currentUser = useAuthStore((state) => state.user);
-  const { activeConversation, setActiveConversation, onlineUsers } = useChatStore();
+  const { activeConversation, setActiveConversation, onlineUsers, isDetailsOpen, setIsDetailsOpen } = useChatStore();
 
   if (!activeConversation) return null;
 
@@ -33,7 +33,7 @@ const ChatHeader = () => {
     <div className="h-16 flex items-center justify-between px-4 bg-background-secondary border-b border-border select-none z-10 flex-shrink-0">
       
       {/* Left side: Back Button, Avatar, Name & Status */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         {/* Back Button on Mobile/Tablet */}
         <button
           onClick={() => setActiveConversation(null)}
@@ -42,23 +42,29 @@ const ChatHeader = () => {
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        {/* Profile Avatar */}
-        <Avatar
-          src={displayAvatar}
-          name={displayName}
-          size="md"
-          showOnline={!activeConversation.isGroup}
-          isOnline={isOnline}
-        />
+        {/* Profile Info (Clickable to show details) */}
+        <div
+          onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+          className="flex items-center gap-3 min-w-0 cursor-pointer select-none group"
+        >
+          {/* Profile Avatar */}
+          <Avatar
+            src={displayAvatar}
+            name={displayName}
+            size="md"
+            showOnline={!activeConversation.isGroup}
+            isOnline={isOnline}
+          />
 
-        {/* Name and Status Info */}
-        <div className="min-w-0">
-          <h3 className="font-semibold text-text-primary text-sm truncate leading-snug">
-            {displayName}
-          </h3>
-          <p className={`text-xs truncate ${isOnline && !activeConversation.isGroup ? "text-online font-medium" : "text-text-secondary"}`}>
-            {statusText}
-          </p>
+          {/* Name and Status Info */}
+          <div className="min-w-0">
+            <h3 className="font-semibold text-text-primary text-sm truncate leading-snug group-hover:text-accent transition-colors">
+              {displayName}
+            </h3>
+            <p className={`text-xs truncate ${isOnline && !activeConversation.isGroup ? "text-online font-medium" : "text-text-secondary"}`}>
+              {statusText}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -75,6 +81,15 @@ const ChatHeader = () => {
           className="p-2 rounded-xl text-text-secondary hover:text-accent hover:bg-background-hover transition-all focus:outline-none"
         >
           <Video className="w-4.5 h-4.5" />
+        </button>
+        <button
+          title="Conversation Details"
+          onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+          className={`p-2 rounded-xl transition-all focus:outline-none ${
+            isDetailsOpen ? "text-accent bg-accent/10" : "text-text-secondary hover:text-accent hover:bg-background-hover"
+          }`}
+        >
+          <Info className="w-4.5 h-4.5" />
         </button>
         <button
           title="More Options"

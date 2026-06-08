@@ -9,7 +9,7 @@ import TypingIndicator from "./TypingIndicator";
 import ConversationDetailsPanel from "./ConversationDetailsPanel";
 
 const ChatWindow = () => {
-  const { activeConversation, fetchMessages, markAsRead, messages } = useChatStore();
+  const { activeConversation, fetchMessages, markAsRead, messages, isDetailsOpen } = useChatStore();
   const { typingUser } = useSocket();
 
   useEffect(() => {
@@ -40,10 +40,10 @@ const ChatWindow = () => {
   }
 
   return (
-    <div className="h-full flex-1 flex bg-background-primary min-w-0 overflow-hidden">
+    <div className="h-full flex-1 flex bg-background-primary min-w-0 overflow-hidden relative">
 
-      {/* ── Main chat feed (fills remaining space) ── */}
-      <div className="flex-1 h-full flex flex-col min-w-0">
+      {/* ── Main chat feed ── */}
+      <div className={`flex-1 h-full flex flex-col min-w-0 ${isDetailsOpen ? "hidden xl:flex" : "flex"}`}>
         <ChatHeader />
 
         <div className="flex-1 min-h-0 relative">
@@ -54,8 +54,12 @@ const ChatWindow = () => {
         <MessageInput />
       </div>
 
-      {/* ── Details panel — always pinned on xl, hidden on smaller ── */}
-      <div className="hidden xl:flex w-72 2xl:w-80 flex-shrink-0 h-full">
+      {/* ── Details panel — always pinned on xl, toggleable on mobile/tablet ── */}
+      <div className={`${
+        isDetailsOpen 
+          ? "flex absolute inset-0 z-40 bg-background-secondary w-full h-full xl:relative xl:flex xl:w-72 xl:2xl:w-80" 
+          : "hidden xl:flex w-72 2xl:w-80"
+      } flex-shrink-0 h-full`}>
         <ConversationDetailsPanel messages={messages} />
       </div>
 

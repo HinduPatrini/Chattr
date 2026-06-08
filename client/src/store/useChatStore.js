@@ -11,6 +11,9 @@ export const useChatStore = create((set, get) => ({
   unreadCounts: {}, // key: conversationId, value: number
   isLoadingMessages: false,
   isLoadingConversations: false,
+  isDetailsOpen: false,
+
+  setIsDetailsOpen: (open) => set({ isDetailsOpen: open }),
 
   fetchConversations: async () => {
     set({ isLoadingConversations: true });
@@ -45,7 +48,7 @@ export const useChatStore = create((set, get) => ({
   },
 
   setActiveConversation: (conversation) => {
-    set({ activeConversation: conversation });
+    set({ activeConversation: conversation, isDetailsOpen: false });
     if (conversation) {
       // Clear unread count for this conversation in local state
       set((state) => ({

@@ -6,6 +6,7 @@ import {
   Shield,
   Users,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
@@ -15,7 +16,7 @@ import { formatLastSeen } from "../../utils/dateHelper";
 const ConversationDetailsPanel = ({ messages }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const currentUser = useAuthStore((state) => state.user);
-  const { activeConversation, onlineUsers } = useChatStore();
+  const { activeConversation, onlineUsers, setIsDetailsOpen } = useChatStore();
 
   if (!activeConversation) return null;
 
@@ -39,7 +40,14 @@ const ConversationDetailsPanel = ({ messages }) => {
       <div className="w-full h-full border-l border-border bg-background-secondary flex flex-col">
 
         {/* Header */}
-        <div className="h-16 border-b border-border flex items-center px-5 flex-shrink-0 bg-background-tertiary">
+        <div className="h-16 border-b border-border flex items-center gap-3 px-5 flex-shrink-0 bg-background-tertiary">
+          {/* Back Button on Mobile/Tablet */}
+          <button
+            onClick={() => setIsDetailsOpen(false)}
+            className="xl:hidden p-2 -ml-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-background-hover transition-all focus:outline-none"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
           <span className="font-bold text-text-primary text-sm tracking-wide uppercase">
             {activeConversation.isGroup ? "Group Info" : "Contact Info"}
           </span>
