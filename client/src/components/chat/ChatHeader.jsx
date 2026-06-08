@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, Phone, Video, MoreVertical, Info } from "lucide-react";
+import { ArrowLeft, Phone, Video, MoreVertical, Image as ImageIcon } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
 import Avatar from "../common/Avatar";
@@ -83,13 +83,13 @@ const ChatHeader = () => {
           <Video className="w-4.5 h-4.5" />
         </button>
         <button
-          title="Conversation Details"
+          title="Shared Media & Details"
           onClick={() => setIsDetailsOpen(!isDetailsOpen)}
           className={`p-2 rounded-xl transition-all focus:outline-none ${
             isDetailsOpen ? "text-accent bg-accent/10" : "text-text-secondary hover:text-accent hover:bg-background-hover"
           }`}
         >
-          <Info className="w-4.5 h-4.5" />
+          <ImageIcon className="w-4.5 h-4.5" />
         </button>
         <button
           title="More Options"
