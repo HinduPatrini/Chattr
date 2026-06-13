@@ -2,6 +2,7 @@ import axios from "axios";
 
 // Base server origin — dynamically fallback to current domain if deployed, or localhost in development
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || 
+  (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, "") : null) ||
   (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"
     ? window.location.origin
     : "http://localhost:5000");
