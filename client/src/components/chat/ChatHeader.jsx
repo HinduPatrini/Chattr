@@ -37,7 +37,7 @@ const ChatHeader = () => {
         {/* Back Button */}
         <button
           onClick={() => setActiveConversation(null)}
-          className="p-2 -ml-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-background-hover transition-all focus:outline-none"
+          className="lg:hidden p-2 -ml-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-background-hover transition-all focus:outline-none"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
